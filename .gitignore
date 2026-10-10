@@ -1,0 +1,6 @@
+.DS_Store
+# Inputs for the build scripts in design/. Fonts are Syne and Space Grotesk (SIL OFL) from github.com/google/fonts.
+design/fonts/
+design/shots/
+__pycache__/
+.preview.html

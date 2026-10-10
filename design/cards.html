@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Profile cards</title>
+<style>
+  @font-face { font-family: "Syne"; src: url(fonts/Syne-VF.ttf) format("truetype"); font-weight: 400 800; }
+  @font-face { font-family: "Space Grotesk"; src: url(fonts/SpaceGrotesk-VF.ttf) format("truetype"); font-weight: 300 700; }
+
+  /* ENTØ Studios' palette. Lime is a fill, never text on the light ground. */
+  :root { --bg: #060606; --card: #0c0c0c; --ink: #f0ede8; --muted: #8a8781; --line: #2a2a2a; --lime: #c8ff57; --chip-ink: #060606; }
+  :root[data-mode="light"] { --bg: #f0ede8; --card: #e9e5de; --ink: #060606; --muted: #605d58; --line: #cfcac1; }
+
+  * { box-sizing: border-box; margin: 0; }
+  body { background: transparent; font-family: "Space Grotesk", sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .label { font-weight: 600; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+
+  /* ---------- grid card ---------- */
+  .card { width: 410px; background: var(--card); border: 1px solid var(--line); display: flex; flex-direction: column; }
+  .shot { position: relative; height: 230px; overflow: hidden; border-bottom: 1px solid var(--line); background: #000; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+  .meta { padding: 20px 22px 22px; display: grid; row-gap: 10px; }
+  .row { display: flex; justify-content: space-between; align-items: center; }
+  .num { display: inline-flex; align-items: center; gap: 10px; }
+  .chip { display: inline-block; padding: 3px 7px 2px; background: var(--lime); color: var(--chip-ink); font-weight: 600; font-size: 10.5px; letter-spacing: 0.14em; }
+  h2 { font-family: "Syne", sans-serif; font-weight: 800; font-size: 27px; line-height: 1.02; letter-spacing: -0.01em; text-transform: uppercase; margin-top: 2px; }
+  .line { font-size: 14.5px; line-height: 1.45; color: var(--ink); opacity: 0.86; min-height: 42px; }
+  .foot { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .go { font-weight: 600; font-size: 11px; letter-spacing: 0.16em; color: var(--ink); }
+
+  /* ---------- feature card ---------- */
+  .feature { width: 830px; height: 460px; background: var(--card); border: 1px solid var(--line); display: grid; grid-template-columns: 1fr 312px; }
+  .copy { padding: 30px 30px 26px 32px; display: flex; flex-direction: column; }
+  .feature h2 { font-size: 56px; line-height: 0.92; margin-top: 16px; white-space: nowrap; }
+  .feature h2.long { font-size: 46px; }
+  .lede { margin-top: 12px; font-size: 18px; font-weight: 500; line-height: 1.3; }
+  .body { margin-top: 10px; font-size: 14px; line-height: 1.5; opacity: 0.82; max-width: 430px; }
+  .built { margin-top: 14px; display: grid; row-gap: 6px; }
+  .built div { display: flex; gap: 12px; font-size: 13px; line-height: 1.3; }
+  .built span:first-child { color: var(--muted); font-weight: 600; font-size: 10.5px; letter-spacing: 0.16em; width: 18px; padding-top: 2px; }
+  .feature .foot { margin-top: auto; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .window { margin: 22px 22px 22px 0; border: 1px solid var(--line); background: #000; position: relative; overflow: hidden; }
+  .window img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+  .window.clip { background: #000; } /* replaced by the trailer clip when the GIF is built */
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  const CARDS = {
+    gotham: {
+      kind: "feature", num: "01", kicker: "Featured · fan build · 2026", title: "Gotham",
+      lede: "A Batman fan site you scroll into.",
+      body: "Type into Bruce Wayne's Batcomputer, then dive through its glass. Every section cuts in like a channel change, and every sound is synthesized live in the browser.",
+      built: ["A Batcomputer you can type into", "Eighty years of emblems on a rolling odometer", "Rogues face-matched by the machine, Arkham mode in red"],
+      tags: "Next.js · Framer Motion · Canvas · WebAudio", go: "↗ Live soon  ·  ▶ 25 s trailer", visual: "clip",
+    },
+    bugle: {
+      kind: "feature", num: "02", kicker: "Featured · fan build · 2026", title: "The Daily<br>Bugle", long: true,
+      lede: "A Spider-Verse comic you read by scrolling.",
+      body: "Scroll down and the strip runs sideways through five universes, each printed in its own ink. Readers sign the wall, and the sound is synthesized in the browser.",
+      built: ["Vertical scroll drives a horizontal comic", "Five universes, five Spiders, one issue", "A reader wall on Supabase"],
+      tags: "Next.js · Lenis · Framer Motion · Supabase", go: "↗ Live  ·  Code", visual: "shots/bugle-portrait.png",
+    },
+    ento: { kind: "card", num: "03", year: "2026", title: "ENTØ Studios", line: "My studio's home. A creative intelligence studio, built to its own brief.", tags: "Next.js · Framer Motion · Lenis", shot: "shots/ento-b.png" },
+    vidyuth: { kind: "card", num: "04", year: "2026", title: "Vidyuth Nº12", line: "Client site for a 12-year-old karting driver racing toward Formula 1.", tags: "Next.js · GSAP · Motion", shot: "shots/vidyuth-b.png" },
+    console: { kind: "card", num: "05", year: "2026", title: "Shrivas PS", line: "My portfolio as a game console. It boots one person. Press START.", tags: "Next.js · Zustand · Framer Motion", shot: "shots/console-b.png" },
+    sujitha: { kind: "card", num: "06", year: "2026", title: "Sujitha M", line: "ENTØ's first client: a portfolio and course pages for a digital marketer.", tags: "React · Vite · Three.js", shot: "shots/sujitha-b.png" },
+  };
+
+  const q = new URLSearchParams(location.search);
+  document.documentElement.dataset.mode = q.get("mode") || "dark";
+  const c = CARDS[q.get("card") || "gotham"];
+  const root = document.getElementById("root");
+
+  if (c.kind === "feature") {
+    const visual = c.visual === "clip" ? `<div class="window clip" id="window"></div>` : `<div class="window" id="window"><img src="${c.visual}" alt=""></div>`;
+    root.innerHTML = `
+      <article class="feature" id="card">
+        <div class="copy">
+          <div class="row"><span class="num"><span class="chip">${c.num}</span><span class="label">${c.kicker}</span></span></div>
+          <h2 class="${c.long ? "long" : ""}">${c.title}</h2>
+          <p class="lede">${c.lede}</p>
+          <p class="body">${c.body}</p>
+          <div class="built">${c.built.map((b, i) => `<div><span>0${i + 1}</span><span>${b}</span></div>`).join("")}</div>
+          <div class="row foot"><span class="label">${c.tags}</span><span class="go">${c.go}</span></div>
+        </div>
+        ${visual}
+      </article>`;
+  } else {
+    root.innerHTML = `
+      <article class="card" id="card">
+        <div class="shot"><img src="${c.shot}" alt=""></div>
+        <div class="meta">
+          <div class="row"><span class="num"><span class="chip">${c.num}</span></span><span class="label">${c.year}</span></div>
+          <h2>${c.title}</h2>
+          <p class="line">${c.line}</p>
+          <div class="row foot"><span class="label">${c.tags}</span><span class="go">↗</span></div>
+        </div>
+      </article>`;
+  }
+  window.__ready = Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode().catch(() => {}))]).then(() => true);
+</script>
+</body>
+</html>

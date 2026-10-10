@@ -1,6 +1,6 @@
 <!-- Every graphic on this page is hand-built. The source lives in /design. -->
 
-<img src="./assets/top.svg" width="100%" alt="Shrivas VM. Founder and creative director, ENTØ Studios, based in Dundee, Scotland. A portrait of him typeset from his own words, beside his role, stack, work and live GitHub numbers.">
+<img src="./assets/top.svg" width="100%" alt="Shrivas VM. Founder and creative director, ENTØ Studios, based in Dundee, Scotland. A portrait of him in a Dundee café, typeset from his own words, looks across at his role, stack, work and live GitHub numbers.">
 
 <br><br>
 

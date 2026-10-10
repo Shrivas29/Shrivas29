@@ -198,7 +198,6 @@ SECTIONS = {
 def main():
     OUT.mkdir(exist_ok=True)
     for mode, p in PALETTES.items():
-        (OUT / f"hero-{mode}.svg").write_text(hero(p))
         (OUT / f"principles-{mode}.svg").write_text(principles(p))
         (OUT / f"signoff-{mode}.svg").write_text(signoff(p))
         for key, (i, t, n) in SECTIONS.items():

@@ -1,8 +1,8 @@
 <!-- Every graphic on this page is hand-built. The source lives in /design. -->
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.svg">
-  <img src="./assets/hero-light.svg" width="100%" alt="SHRIVAS VM. Founder and creative director, ENTØ Studios. Design, build, motion. Open to work.">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/terminal-dark.svg">
+  <img src="./assets/terminal-light.svg" width="100%" alt="shrivas@entø. An ASCII portrait of Shrivas beside a system readout: designer, developer and founder of ENTØ Studios, based in Dundee, Scotland. Works: Gotham, The Daily Bugle, Vidyuth Nº12, Sujitha M, ENTØ Studios, Shrivas PS.">
 </picture>
 
 <br><br>
@@ -18,14 +18,14 @@ My portfolio is [Shrivas PS](https://shrivas-console.vercel.app), a console that
   <img src="./assets/section-work-light.svg" width="100%" alt="01. Selected work.">
 </picture>
 
-<a href="./assets/gotham-trailer.mp4">
+<a href="https://gotham-ashen.vercel.app">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./assets/card-gotham-dark.gif">
     <img src="./assets/card-gotham-light.gif" width="100%" alt="Gotham, a Batman fan site you scroll into. Type into Bruce Wayne's Batcomputer, then dive through its glass. Every section cuts in like a channel change, and every sound is synthesized live.">
   </picture>
 </a>
 
-<sub>**Gotham** &nbsp;·&nbsp; [▶ Watch the 25 s trailer](./assets/gotham-trailer.mp4) &nbsp;·&nbsp; [Code](https://github.com/Shrivas29/GOTHAM) &nbsp;·&nbsp; Live link coming soon</sub>
+<sub>**Gotham** &nbsp;·&nbsp; [Visit it live](https://gotham-ashen.vercel.app) &nbsp;·&nbsp; [▶ Watch the 25 s trailer](./assets/gotham-trailer.mp4) &nbsp;·&nbsp; [Code](https://github.com/Shrivas29/GOTHAM)</sub>
 
 <br><br>
 
@@ -58,7 +58,7 @@ My portfolio is [Shrivas PS](https://shrivas-console.vercel.app), a console that
 
 | Nº | Project | What it is | Live | Code |
 | :-- | :-- | :-- | :-- | :-- |
-| 01 | **Gotham** | Batman fan site you scroll into | soon | [code](https://github.com/Shrivas29/GOTHAM) |
+| 01 | **Gotham** | Batman fan site you scroll into | [live](https://gotham-ashen.vercel.app) | [code](https://github.com/Shrivas29/GOTHAM) |
 | 02 | **The Daily Bugle** | Spider-Verse comic, read by scrolling | [live](https://spiderverse-lovat.vercel.app) | [code](https://github.com/Shrivas29/spiderverse) |
 | 03 | **ENTØ Studios** | My studio's site | [entostudios.com](https://entostudios.com) | [code](https://github.com/Shrivas29/ENTO) |
 | 04 | **Vidyuth Nº12** | Client site, karting driver | [live](https://vidyuth-portfolio.vercel.app) | [code](https://github.com/Shrivas29/VIDYUTH-PORTFOLIO-) |

@@ -1,9 +1,6 @@
 <!-- Every graphic on this page is hand-built. The source lives in /design. -->
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/terminal-dark.svg">
-  <img src="./assets/terminal-light.svg" width="100%" alt="shrivas@entø. An ASCII portrait of Shrivas beside a system readout: designer, developer and founder of ENTØ Studios, based in Dundee, Scotland. Works: Gotham, The Daily Bugle, Vidyuth Nº12, Sujitha M, ENTØ Studios, Shrivas PS.">
-</picture>
+<img src="./assets/top.svg" width="100%" alt="Shrivas VM. Founder and creative director, ENTØ Studios, based in Dundee, Scotland. A portrait of him typeset from his own words, beside his role, stack, work and live GitHub numbers.">
 
 <br><br>
 

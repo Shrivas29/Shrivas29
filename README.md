@@ -25,7 +25,7 @@ My portfolio is [Shrivas PS](https://shrivas-console.vercel.app), a console that
   </picture>
 </a>
 
-<sub>**Gotham** &nbsp;·&nbsp; [▶ Watch the 25 s trailer](./assets/gotham-trailer.mp4) &nbsp;·&nbsp; Live link coming soon</sub>
+<sub>**Gotham** &nbsp;·&nbsp; [▶ Watch the 25 s trailer](./assets/gotham-trailer.mp4) &nbsp;·&nbsp; [Code](https://github.com/Shrivas29/GOTHAM) &nbsp;·&nbsp; Live link coming soon</sub>
 
 <br><br>
 
@@ -58,7 +58,7 @@ My portfolio is [Shrivas PS](https://shrivas-console.vercel.app), a console that
 
 | Nº | Project | What it is | Live | Code |
 | :-- | :-- | :-- | :-- | :-- |
-| 01 | **Gotham** | Batman fan site you scroll into | soon | soon |
+| 01 | **Gotham** | Batman fan site you scroll into | soon | [code](https://github.com/Shrivas29/GOTHAM) |
 | 02 | **The Daily Bugle** | Spider-Verse comic, read by scrolling | [live](https://spiderverse-lovat.vercel.app) | [code](https://github.com/Shrivas29/spiderverse) |
 | 03 | **ENTØ Studios** | My studio's site | [entostudios.com](https://entostudios.com) | [code](https://github.com/Shrivas29/ENTO) |
 | 04 | **Vidyuth Nº12** | Client site, karting driver | [live](https://vidyuth-portfolio.vercel.app) | [code](https://github.com/Shrivas29/VIDYUTH-PORTFOLIO-) |

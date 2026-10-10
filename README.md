@@ -1,6 +1,6 @@
 <!-- Every graphic on this page is hand-built. The source lives in /design. -->
 
-<img src="./assets/top.svg" width="100%" alt="Shrivas VM. Founder and creative director, ENTØ Studios, based in Dundee, Scotland. A portrait of him in a Dundee café, typeset from his own words, looks across at his role, stack, work and live GitHub numbers.">
+<img src="./assets/top.svg" width="100%" alt="A classic Mac desktop. The About Shrivas window shows a 1-bit portrait of Shrivas VM, founder and creative director of ENTØ Studios, based in Dundee, Scotland, with his stack and work. Desktop icons for Gotham, The Daily Bugle, ENTØ Studios, Vidyuth Nº12, Shrivas PS and Sujitha M. An alert says Gotham is live.">
 
 <br><br>
 

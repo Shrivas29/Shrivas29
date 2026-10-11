@@ -1,7 +1,7 @@
 """The profile's top section as a classic Mac desktop: a 1-bit "About Shrivas" window that zooms open, a portrait that
 draws in line by line, desktop icons for the work, and a pointer that double-clicks Gotham open.
 
-Run: python design/mac.py   (writes assets/top.svg)
+Run: python design/mac.py   (writes assets/mac/*.svg and the linked tiles in README.md)
 Needs the cut-out café photo at design/shots/cafe-cut-u2net.png and Departure Mono in design/fonts/.
 """
 
@@ -20,7 +20,9 @@ from live import stats
 HERE = Path(__file__).parent
 OUT = HERE.parent / "assets"
 
-W, H = 846, 502
+W = 846
+SH = 404  # the screen: menu bar and desktop
+LH = 108  # the Launcher window under it
 CW = 7  # Departure Mono advance at 11px
 BLACK, WHITE, DESK, LIME = "#000", "#fff", "#c4c4c4", "#c8ff57"
 T = 5.0  # one pass of the opening sequence, in seconds
@@ -183,6 +185,18 @@ ARROW = [
 ]
 
 
+REPO = "https://github.com/Shrivas29/"
+ICONS = [
+    ("Gotham", FOLDER, REPO + "GOTHAM"),
+    ("Daily Bugle", FOLDER, REPO + "spiderverse"),
+    ("ENTØ Studios", DISK, REPO + "ENTO"),
+    ("Vidyuth Nº12", DOC, REPO + "VIDYUTH-PORTFOLIO-"),
+    ("Shrivas PS", DOC, REPO + "SHRIVAS---CONSOLE-"),
+    ("Sujitha M", DOC, REPO + "SUJITHA-PORTFOLIO"),
+    ("All repos", FOLDER, "https://github.com/Shrivas29?tab=repositories"),
+]
+
+
 def invert(rows: list[str]) -> list[str]:
     return ["".join("." if c == "#" else "#" if c == "." else c for c in r) for r in rows]
 
@@ -262,18 +276,23 @@ def button(x, y, w, label, default=False) -> str:
 # ---------------------------------------------------------------- the desktop
 
 
-def build() -> str:
-    s = stats()
-    body, defs = [], []
+def drawing(css_text: str, defs: list[str], body: list[str]) -> str:
+    return f"<style>{css_text}</style><defs>{''.join(defs)}</defs>{''.join(body)}"
 
-    # Desktop and menu bar.
-    defs.append(f'<pattern id="desk" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="{DESK}"/><rect width="1" height="1" fill="#9c9c9c"/><rect x="2" y="2" width="1" height="1" fill="#9c9c9c"/></pattern>')
-    body.append(f'<rect width="{W}" height="{H}" fill="url(#desk)"/>')
+
+CSS = 'text{font-family:"DM",ui-monospace,monospace}rect,path{shape-rendering:crispEdges}'
+DESK_PATTERN = f'<pattern id="desk" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="{DESK}"/><rect width="1" height="1" fill="#9c9c9c"/><rect x="2" y="2" width="1" height="1" fill="#9c9c9c"/></pattern>'
+ALERT = (586, 196, 244, 126)  # x, y, w, h
+
+
+def build_screen(s: dict, font: str) -> str:
+    """Menu bar and desktop: the About window, the hard disk, the Gotham alert and the Trash."""
+    body, defs = [], [DESK_PATTERN]
+    body.append(f'<rect width="{W}" height="{SH}" fill="url(#desk)"/>')
     body.append(f'<rect width="{W}" height="20" fill="{WHITE}"/><rect y="20" width="{W}" height="1" fill="{BLACK}"/>')
-    body.append(f'<rect x="12" y="3" width="15" height="15" fill="{LIME}"/>' + box(12, 3, 15, 15, LIME) + text("Ø", 16, 15, 11))
-    menus = ["File", "Edit", "View", "Special", "Label"]
+    body.append(box(12, 3, 15, 15, LIME) + text("Ø", 16, 15, 11))
     mx = 44
-    for m in menus:
+    for m in MENUS:
         body.append(text(m, mx, 15))
         mx += len(m) * CW + 21
     body.append(text("Shrivas VM", W - 14, 15, anchor="end"))
@@ -287,16 +306,7 @@ def build() -> str:
         f'<animate attributeName="height" dur="{T}s" values="0;0;{ph};{ph}" keyTimes="0;{0.5 / T:.4f};{1.9 / T:.4f};1" fill="freeze"/></rect></clipPath>'
     )
     tx = px + pw + 24
-    rows = [
-        ("Kind", "Designer, developer, founder"),
-        ("Studio", "ENTØ Studios"),
-        ("Base", "Dundee, Scotland"),
-        ("Stack", "Next.js · React · TypeScript"),
-        ("Motion", "Framer Motion · GSAP · Lenis"),
-        ("Built", f"{s['repos']} repos · {s['live']} live sites"),
-        ("Bar", "Polished, fast, accessible,"),
-        ("", "human."),
-    ]
+    rows = about_rows(s)
     about = (
         box(px - 1, py - 1, pw + 2, ph + 2)
         + f'<image clip-path="url(#draw)" href="{portrait(pw, ph)}" x="{px}" y="{py}" width="{pw}" height="{ph}" image-rendering="optimizeSpeed" style="image-rendering:pixelated"/>'
@@ -310,55 +320,136 @@ def build() -> str:
     about += f'<g opacity="1">{appear(1.75)}' + button(tx + 2, py + ph - 22, 112, "Open Gotham", True) + button(tx + 136, py + ph - 22, 96, "Portfolio") + "</g>"
     body.append(window(ax, ay, aw, ah, "About Shrivas", about, 0.35, (12, 3, 15, 15), "about"))
 
-    # Desktop icons along the right edge.
-    icons = [("Gotham", FOLDER), ("Daily Bugle", FOLDER), ("ENTØ Studios", DISK), ("Vidyuth Nº12", DOC), ("Shrivas PS", DOC), ("Sujitha M", DOC), ("Trash", TRASH)]
-    ix, iy0, step = 784, 34, 64
-    gotham_box = None
-    for i, (label, art) in enumerate(icons):
-        iy = iy0 + i * step
+    # The hard disk at the top right and the Trash at the bottom right, as on any Mac.
+    ix = 790
+    for label, art, y0 in (("Shrivas HD", DISK, 34), ("Trash", TRASH, SH - 66)):
         w_art = max(len(r) for r in art)
-        gx = ix - w_art // 2
         lw = len(label) * CW + 6
-        normal = bitmap(art, gx, iy) + f'<rect x="{ix - lw / 2:.0f}" y="{iy + 26}" width="{lw}" height="14" fill="{WHITE}"/>' + text(label, ix, iy + 37, anchor="middle")
+        body.append(bitmap(art, ix - w_art // 2, y0 + (22 - len(art))) + f'<rect x="{ix - lw / 2:.0f}" y="{y0 + 29}" width="{lw}" height="14" fill="{WHITE}"/>' + text(label, ix, y0 + 40, anchor="middle"))
+
+    # The alert the Launcher's Gotham button opens; it zooms up from the bottom edge, where the button sits.
+    lx, ly, lw_, lh = ALERT
+    alert = (
+        f'<circle cx="{lx + 30}" cy="{ly + 52}" r="15" fill="{LIME}" stroke="{BLACK}" stroke-width="2"/>'
+        + text("!", lx + 30, ly + 60, 22, anchor="middle")
+        + text("Gotham is live.", lx + 56, ly + 38)
+        + text("A Batman fan site", lx + 56, ly + 53)
+        + text("you scroll into.", lx + 56, ly + 67)
+        + text("gotham-ashen.vercel.app", lx + 56, ly + 85, fill="#555")
+        + button(lx + lw_ - 70, ly + lh - 32, 54, "OK", True)
+    )
+    body.append(window(lx, ly, lw_, lh, "Gotham", alert, 3.25, (30, SH - 6, 100, 6), "alert"))
+    return drawing(font + CSS, defs, body)
+
+
+def build_launcher(font: str) -> str:
+    """The Launcher: one window of big buttons, one per project. Each button becomes its own linked tile."""
+    body, defs = [], [DESK_PATTERN]
+    body.append(f'<rect width="{W}" height="{LH}" fill="url(#desk)"/>')
+    x, y, w, h = 8, 4, W - 18, LH - 10
+    bar = 19
+    stripes = "".join(f'<rect x="{x + 2}" y="{y + 4 + i * 2}" width="{w - 4}" height="1" fill="{BLACK}"/>' for i in range(6))
+    title = "Launcher"
+    tw = len(title) * CW + 16
+    body.append(
+        box(x, y, w, h)
+        + f'<rect x="{x + 1}" y="{y + bar}" width="{w - 2}" height="1" fill="{BLACK}"/>' + stripes
+        + f'<rect x="{x + w / 2 - tw / 2:.0f}" y="{y + 2}" width="{tw}" height="{bar - 3}" fill="{WHITE}"/>' + text(title, x + w / 2, y + 14, anchor="middle")
+        + f'<rect x="{x + 8}" y="{y + 3}" width="13" height="13" fill="{WHITE}"/>' + box(x + 9, y + 4, 11, 11)
+        + f'<rect x="{x + 2}" y="{y + h}" width="{w}" height="2" fill="{BLACK}"/><rect x="{x + w}" y="{y + 2}" width="2" height="{h}" fill="{BLACK}"/>'
+    )
+    for i, (label, art, _) in enumerate(ICONS):
+        cx = TILE_X[i] + TILE_W[i] / 2
+        # Centred in its tile, but kept clear of the window's edges.
+        bw, bh = 96, 62
+        bx, by = round(min(max(cx - bw / 2, x + 10), x + w - 10 - bw)), y + bar + 8
+        cx = bx + bw / 2
+        w_art = max(len(r) for r in art)
+        gx, gy = round(cx - w_art / 2), by + 8 + (22 - len(art))
+        normal = box(bx, by, bw, bh) + bitmap(art, gx, gy) + text(label, cx, by + 52, anchor="middle")
         if label == "Gotham":
-            gotham_box = (gx, iy, w_art, 40)
-            flash = ";".join(["0", "0", "1", "0", "1", "1"])
+            flash = "0;0;1;0;1;1"
             k = [0, 2.7 / T, 2.71 / T, 2.82 / T, 2.86 / T, 1]
-            selected = bitmap(invert(art), gx, iy) + f'<rect x="{ix - lw / 2:.0f}" y="{iy + 26}" width="{lw}" height="14" fill="{BLACK}"/>' + text(label, ix, iy + 37, 11, WHITE, "middle")
-            body.append(normal + f'<g opacity="0"><animate attributeName="opacity" dur="{T}s" values="{flash}" keyTimes="{";".join(f"{v:.4f}" for v in k)}" fill="freeze"/>{selected}</g>')
+            pressed = box(bx, by, bw, bh, BLACK) + bitmap(invert(art), gx, gy) + text(label, cx, by + 52, 11, WHITE, "middle")
+            body.append(normal + f'<g opacity="0"><animate attributeName="opacity" dur="{T}s" values="{flash}" keyTimes="{";".join(f"{v:.4f}" for v in k)}" fill="freeze"/>{pressed}</g>')
+            start, end = (round(cx + 30), by + bh - 4), (round(cx + 4), by + 24)
+            body.append(
+                f'<g transform="translate({end[0]} {end[1]})"><animateTransform attributeName="transform" type="translate" dur="{T}s" values="{start[0]} {start[1]};{start[0]} {start[1]};{end[0]} {end[1]};{end[0]} {end[1]}" keyTimes="0;{2.1 / T:.4f};{2.6 / T:.4f};1" calcMode="spline" keySplines="0 0 1 1;.45 0 .25 1;0 0 1 1" fill="freeze"/>'
+                + bitmap(ARROW, 0, 0) + "</g>"
+            )
         else:
             body.append(normal)
+    return drawing(font + CSS, defs, body)
 
-    # The alert Gotham opens.
-    lx, ly, lw_, lh = 436, 348, 290, 140
-    alert = (
-        f'<circle cx="{lx + 34}" cy="{ly + 52}" r="16" fill="{LIME}" stroke="{BLACK}" stroke-width="2"/>'
-        + text("!", lx + 34, ly + 60, 22, anchor="middle")
-        + text("Gotham is live.", lx + 62, ly + 42)
-        + text("A Batman fan site you", lx + 62, ly + 58)
-        + text("scroll into.", lx + 62, ly + 72)
-        + text("gotham-ashen.vercel.app", lx + 62, ly + 92, fill="#555")
-        + button(lx + lw_ - 70, ly + lh - 30, 54, "OK", True)
-    )
-    body.append(window(lx, ly, lw_, lh, "Gotham", alert, 3.25, gotham_box, "alert"))
 
-    # The pointer: across the desktop, a double-click on Gotham, then over to OK.
-    path = [(600, 470), (640, 300), (ix - 4, iy0 + 14), (ix - 4, iy0 + 14), (lx + lw_ - 44, ly + lh - 18)]
-    times = [0, 1.9, 2.6, 3.45, 4.1]
-    vals = ";".join(f"{x} {y}" for x, y in path)
-    kt = ";".join(f"{t / T:.4f}" for t in times[:-1]) + f";{times[-1] / T:.4f}"
-    body.append(
-        f'<g transform="translate({path[-1][0]} {path[-1][1]})"><animateTransform attributeName="transform" type="translate" dur="{T}s" values="{vals};{path[-1][0]} {path[-1][1]}" keyTimes="{kt};1" calcMode="spline" keySplines="{";".join([".45 0 .25 1"] * len(path))}" fill="freeze"/>'
-        + bitmap(ARROW, 0, 0) + "</g>"
-    )
+MENUS = ["File", "Edit", "View", "Special", "Label"]
+TILE_W = [121, 121, 121, 121, 121, 121, 120]
+TILE_X = [sum(TILE_W[:i]) for i in range(len(TILE_W))]
+SPLIT = 580  # the screen splits here: the About side and the alert side
+PORTFOLIO = "https://shrivas-console.vercel.app"
+SCALE = 99.9  # percent of the README's width; a hair under 100 so rounding never wraps a row
 
-    used = "".join(menus) + "ØShrivas VMDundee  56.46° NAbout ShrivasFounder & creative director,ENTØ Studios.OpenGotham Portfolio OK!" + "".join(k + v for k, v in rows) + "".join(l for l, _ in icons) + "Gotham is live.A Batman fan site youscroll into.gotham-ashen.vercel.app0123456789·"
-    css = embedded_font(used) + 'text{font-family:"DM",ui-monospace,monospace}rect,path{shape-rendering:crispEdges}'
-    title = "A classic Mac desktop. An About Shrivas window: Shrivas VM, founder and creative director of ENTØ Studios, Dundee, Scotland, with a 1-bit portrait. Desktop icons for Gotham, The Daily Bugle, ENTØ Studios, Vidyuth Nº12, Shrivas PS and Sujitha M. An alert says Gotham is live."
+
+def about_rows(s: dict) -> list[tuple[str, str]]:
+    return [
+        ("Kind", "Designer, developer, founder"),
+        ("Studio", "ENTØ Studios"),
+        ("Base", "Dundee, Scotland"),
+        ("Stack", "Next.js · React · TypeScript"),
+        ("Motion", "Framer Motion · GSAP · Lenis"),
+        ("Built", f"{s['repos']} repos · {s['live']} live sites"),
+        ("Bar", "Polished, fast, accessible,"),
+        ("", "human."),
+    ]
+
+
+# ---------------------------------------------------------------- tiles
+#
+# GitHub shows each README image as one link and strips image maps, and its stylesheet pads floated images.
+# Images on the same line do sit flush, though. So the screen is one row of two images and the Launcher is one
+# row of buttons, each a window onto the same drawing so the seams line up.
+
+
+def svg(viewbox: tuple, inner: str, alt: str) -> str:
+    x, y, w, h = viewbox
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img" aria-label="{escape(title)}">'
-        f"<title>{escape(title)}</title><style>{css}</style><defs>{''.join(defs)}</defs>{''.join(body)}</svg>"
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x} {y} {w} {h}" width="{w}" height="{h}" role="img" aria-label="{escape(alt)}">'
+        f"<title>{escape(alt)}</title>{inner}</svg>"
     )
+
+
+def write_tiles():
+    s = stats()
+    used = "".join(MENUS) + "ØShrivas VMDundee  56.46° NAbout ShrivasFounder & creative director,ENTØ Studios.Open Gotham Portfolio OK! Launcher Shrivas HD Trash"
+    used += "".join(k + v for k, v in about_rows(s)) + "".join(l for l, _, _ in ICONS) + "Gotham is live.A Batman fan siteyou scroll into.gotham-ashen.vercel.app0123456789·"
+    font = embedded_font(used)
+    screen, launcher = build_screen(s, font), build_launcher(font)
+    folder = OUT / "mac"
+    folder.mkdir(exist_ok=True)
+    for old in folder.glob("*.svg"):
+        old.unlink()
+
+    tiles = [
+        ("screen-about", (0, 0, SPLIT, SH), screen, PORTFOLIO, "About Shrivas: Shrivas VM, founder and creative director of ENTØ Studios, Dundee, Scotland, with a 1-bit portrait. Opens his portfolio."),
+        ("screen-gotham", (SPLIT, 0, W - SPLIT, SH), screen, "https://gotham-ashen.vercel.app", "Alert: Gotham is live, a Batman fan site you scroll into. Opens Gotham."),
+    ]
+    for i, (label, _, href) in enumerate(ICONS):
+        slug = label.lower().replace(" ", "-").replace("ø", "o").replace("º", "")
+        alt = f"Launcher button: {label}. Opens the repo." if label != "All repos" else "Launcher button: All repos. Opens every repository."
+        tiles.append((f"launcher-{slug}", (TILE_X[i], 0, TILE_W[i], LH), launcher, href, alt))
+
+    row1, row2 = [], []
+    for name, vb, inner, href, alt in tiles:
+        (folder / f"{name}.svg").write_text(svg(vb, inner, alt))
+        tag = f'<a href="{href}"><img width="{vb[2] / W * SCALE:.3f}%" src="./assets/mac/{name}.svg" alt="{escape(alt)}"></a>'
+        (row1 if name.startswith("screen") else row2).append(tag)
+    block = "<p>" + "".join(row1) + "<br>" + "".join(row2) + "</p>"
+    readme = OUT.parent / "README.md"
+    text_ = readme.read_text()
+    a, b = text_.index("<!-- mac:start -->"), text_.index("<!-- mac:end -->")
+    readme.write_text(text_[: a + len("<!-- mac:start -->")] + "\n" + block + "\n" + text_[b:])
+    total = sum(f.stat().st_size for f in folder.glob("*.svg"))
+    print(f"{len(tiles)} tiles, {total / 1024:.0f} KB, README block updated")
 
 
 def embedded_font(chars: str) -> str:
@@ -373,6 +464,4 @@ def embedded_font(chars: str) -> str:
 
 
 if __name__ == "__main__":
-    svg = build()
-    (OUT / "top.svg").write_text(svg)
-    print(f"top.svg {len(svg) / 1024:.0f} KB")
+    write_tiles()
